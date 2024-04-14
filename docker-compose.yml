@@ -1,0 +1,27 @@
+version: "3"
+services:
+  postgres:
+    image: library/postgres:13
+    container_name: postgres-4
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./postgres/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+
+  banner-service:
+    build:
+      context: ./
+      dockerfile: ./src/Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:
