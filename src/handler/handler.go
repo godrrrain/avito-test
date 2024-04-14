@@ -82,6 +82,12 @@ func (h *Handler) GetBannerForUser(c *gin.Context) {
 		return
 	}
 
+	useLastRevision := false
+	useLastRevisionStr := c.Query("use_last_revision")
+	if useLastRevisionStr == "true" {
+		useLastRevision = true
+	}
+
 	role, exists := c.Get("role")
 	if !exists {
 		fmt.Println("Role not found in context")
@@ -97,13 +103,13 @@ func (h *Handler) GetBannerForUser(c *gin.Context) {
 	reqCache := fmt.Sprintf("%d %d", feature_id, tag_id)
 
 	cacheValue, found := h.cacheB.Get(reqCache)
-	if found {
+	if found && !useLastRevision {
 		banner, ok = cacheValue.(storage.BannerDb)
 		if !ok {
 			found = false
 		}
 	}
-	if !found {
+	if !found || useLastRevision {
 		banner, err = h.storage.GetBanner(context.Background(), tag_id, feature_id)
 		h.cacheB.Set(reqCache, banner, cache.DefaultExpiration)
 	}
