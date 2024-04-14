@@ -1,4 +1,4 @@
-name: GitHub Basic Workflow
+name: GitHub Classroom Workflow
 on:
   push:
     branches:
@@ -17,7 +17,6 @@ jobs:
 
       - uses: docker/setup-buildx-action@v2
 
-      # TODO build and run unit tests
       - name: Setup Go 1.21.1
         uses: actions/setup-go@v4
         with:
@@ -30,7 +29,6 @@ jobs:
       - name: Run API Tests
         uses: matt-ball/newman-action@master
         with:
-          # TODO insert your variant
           collection: postman/[avito]Banner_system.postman_collection.json
           delayRequest: 100
           reporters: '[ "cli" ]'

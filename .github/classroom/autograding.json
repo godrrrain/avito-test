@@ -1,0 +1,14 @@
+{
+    "tests": [
+      {
+        "name": "Run Postman",
+        "setup": "",
+        "run": "newman run [avito]Banner_system.postman_collection.json",
+        "input": "",
+        "output": "",
+        "comparison": "included",
+        "timeout": 10,
+        "points": 10
+      }
+    ]
+  }
