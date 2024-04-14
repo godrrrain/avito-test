@@ -1,0 +1,449 @@
+{
+	"info": {
+		"_postman_id": "cd33dbf6-6f81-41fa-87c8-32bc3165ffad",
+		"name": "[avito] Banner system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26740752"
+	},
+	"item": [
+		{
+			"name": "Banner API",
+			"item": [
+				{
+					"name": "Добавить баннер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Добавить баннер\", () => {",
+									"    pm.response.to.have.status(201)",
+									"",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set(\"banner_id\", response.banner_id)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "admin",
+								"key": "token"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag_ids\": [\n    1,2,7\n  ],\n  \"feature_id\": 4,\n  \"content\": {\n    \"title\": \"Alice\",\n    \"text\": \"alice\",\n    \"url\": \"alice.com\"\n  },\n  \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/banner"
+					},
+					"response": []
+				},
+				{
+					"name": "Получить баннер как юзер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить баннер как юзер\", () => {",
+									"    pm.response.to.have.status(200)",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");",
+									"",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.title).to.be.eq(\"Alice\")",
+									"    pm.expect(response.text).to.be.eq(\"alice\")",
+									"    pm.expect(response.url).to.be.eq(\"alice.com\")",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "user",
+								"key": "token"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user_banner?tag_id=1&feature_id=4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user_banner"
+							],
+							"query": [
+								{
+									"key": "tag_id",
+									"value": "1"
+								},
+								{
+									"key": "feature_id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменить баннер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Изменить баннер\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "admin",
+								"key": "token"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"tag_ids\": [\r\n    1,2,9\r\n  ],\r\n  \"feature_id\": 5,\r\n  \"content\": {\r\n    \"title\": \"Alice2\",\r\n    \"text\": \"alice2\",\r\n    \"url\": \"alice2.com\"\r\n  },\r\n  \"is_active\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/banner/{{banner_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Получить disable баннер как юзер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить disable баннер как юзер\", () => {",
+									"    pm.response.to.have.status(404)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "user",
+								"key": "token"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user_banner?tag_id=1&feature_id=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user_banner"
+							],
+							"query": [
+								{
+									"key": "tag_id",
+									"value": "1"
+								},
+								{
+									"key": "feature_id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить список баннеров",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить список баннеров\", () => {",
+									"    pm.response.to.have.status(200)",
+									"",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an(\"array\")",
+									"",
+									"    const banner_id = pm.collectionVariables.get(\"banner_id\")",
+									"    const banner = _.find(response, { \"banner_id\": banner_id })",
+									"    pm.expect(banner).to.be.not.undefined",
+									"    pm.expect(banner.feature_id).to.be.not.undefined",
+									"    pm.expect(banner.content).to.be.not.undefined",
+									"    pm.expect(banner.is_active).to.be.not.undefined",
+									"    pm.expect(banner.created_at).to.be.not.undefined",
+									"    pm.expect(banner.updated_at).to.be.not.undefined",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "admin",
+								"key": "token"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "Имя пользователя",
+								"key": "X-User-Name",
+								"value": "{{username}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/banner?tag_id=9",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banner"
+							],
+							"query": [
+								{
+									"key": "tag_id",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить баннер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Удалить баннер\", () => {",
+									"    pm.response.to.have.status(204)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "admin",
+								"key": "token"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Имя пользователя",
+								"key": "X-User-Name",
+								"value": "{{username}}"
+							}
+						],
+						"url": "{{baseUrl}}/banner/{{banner_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Добавить баннер как юзер",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Добавить баннер как юзер\", () => {",
+									"    pm.response.to.have.status(403)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "user",
+								"key": "token"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tag_ids\": [\n    1,2,7\n  ],\n  \"feature_id\": 4,\n  \"content\": {\n    \"title\": \"Alice\",\n    \"text\": \"alice\",\n    \"url\": \"alice.com\"\n  },\n  \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/banner"
+					},
+					"response": []
+				},
+				{
+					"name": "Получить баннер как незнакомец",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Получить баннер как незнакомец\", () => {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"value": "fakeUser",
+								"key": "token"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user_banner?tag_id=1&feature_id=4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user_banner"
+							],
+							"query": [
+								{
+									"key": "tag_id",
+									"value": "1"
+								},
+								{
+									"key": "feature_id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.collectionVariables.set(\"libraryUid\", \"83575e12-7ce0-48ee-9931-51919ff3c9ee\")",
+							"pm.collectionVariables.set(\"bookUid\", \"f7cdc58f-2caf-4b15-9727-f89dcc629b27\")",
+							"pm.collectionVariables.set(\"username\", \"Test Max\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "banner_id",
+			"value": ""
+		},
+		{
+			"key": "libraryUid",
+			"value": ""
+		},
+		{
+			"key": "bookUid",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		}
+	]
+}
