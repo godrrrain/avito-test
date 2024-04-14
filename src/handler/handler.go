@@ -50,34 +50,6 @@ type UpdateBannerRequest struct {
 	Is_active  *bool                  `json:"is_active"`
 }
 
-// type LibraryResponse struct {
-// 	Library_uid string `json:"libraryUid"`
-// 	Name        string `json:"name"`
-// 	Address     string `json:"address"`
-// 	City        string `json:"city"`
-// }
-
-// type BookResponse struct {
-// 	Book_uid        string `json:"bookUid"`
-// 	Name            string `json:"name"`
-// 	Author          string `json:"author"`
-// 	Genre           string `json:"genre"`
-// 	Condition       string `json:"condition"`
-// 	Available_count int    `json:"availableCount"`
-// }
-
-// type BookToUserResponse struct {
-// 	Book_uid string `json:"bookUid"`
-// 	Name     string `json:"name"`
-// 	Author   string `json:"author"`
-// 	Genre    string `json:"genre"`
-// }
-
-// type RequestUpdateReservation struct {
-// 	Condition string `json:"condition"`
-// 	Date      string `json:"date"`
-// }
-
 type Handler struct {
 	storage storage.Storage
 	cacheB  *cache.Cache
