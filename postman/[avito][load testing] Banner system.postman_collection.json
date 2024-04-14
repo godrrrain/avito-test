@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "0f1dd2c5-07a4-4393-a4f0-58bd78f62725",
+		"name": "[avito][load testing] Banner system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26740752"
+	},
+	"item": [
+		{
+			"name": "Добавить баннер. Нагрузка",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Добавить баннер\", () => {",
+							"    pm.response.to.have.status(201)",
+							"",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set(\"banner_id\", response.banner_id)",
+							"",
+							"    const tag_iter = Number(pm.collectionVariables.get(\"tag_iter\"))",
+							"    pm.collectionVariables.set(\"tag_iter\", tag_iter + 1)",
+							"    const feature_iter = Number(pm.collectionVariables.get(\"feature_iter\"))",
+							"    pm.collectionVariables.set(\"feature_iter\", feature_iter + 1)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": {
+						"value": "admin",
+						"key": "token"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"tag_ids\": [\n    {{tag_iter}}\n  ],\n  \"feature_id\": {{feature_iter}},\n  \"content\": {\n    \"title\": \"Alice\",\n    \"text\": \"alice\",\n    \"url\": \"alice.com\"\n  },\n  \"is_active\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/banner"
+			},
+			"response": []
+		},
+		{
+			"name": "Получить баннер как юзер. Нагрузка",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Получить баннер как юзер\", () => {",
+							"    pm.response.to.have.status(200)",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.contains(\"application/json\");",
+							"",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.title).to.be.eq(\"Alice\")",
+							"    pm.expect(response.text).to.be.eq(\"alice\")",
+							"    pm.expect(response.url).to.be.eq(\"alice.com\")",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": {
+						"value": "user",
+						"key": "token"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/user_banner?tag_id=555&feature_id=555",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user_banner"
+					],
+					"query": [
+						{
+							"key": "tag_id",
+							"value": "555"
+						},
+						{
+							"key": "feature_id",
+							"value": "555"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "banner_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "tag_iter",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "feature_iter",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

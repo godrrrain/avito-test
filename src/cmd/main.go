@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"avitotest/src/handler"
 	"avitotest/src/storage"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -23,7 +25,9 @@ func main() {
 	}
 	defer psqlDB.Close()
 
-	handler := handler.NewHandler(psqlDB)
+	cacheB := cache.New(3*time.Minute, 5*time.Minute)
+
+	handler := handler.NewHandler(psqlDB, cacheB)
 
 	router := gin.Default()
 

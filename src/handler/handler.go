@@ -11,6 +11,7 @@ import (
 	"avitotest/src/storage"
 
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 )
 
 type ErrorResponse struct {
@@ -79,10 +80,14 @@ type UpdateBannerRequest struct {
 
 type Handler struct {
 	storage storage.Storage
+	cacheB  *cache.Cache
 }
 
-func NewHandler(storage storage.Storage) *Handler {
-	return &Handler{storage: storage}
+func NewHandler(storage storage.Storage, cacheB *cache.Cache) *Handler {
+	return &Handler{
+		storage: storage,
+		cacheB:  cacheB,
+	}
 }
 
 func (h *Handler) GetBannerForUser(c *gin.Context) {
@@ -114,7 +119,22 @@ func (h *Handler) GetBannerForUser(c *gin.Context) {
 		return
 	}
 
-	banner, err := h.storage.GetBanner(context.Background(), tag_id, feature_id)
+	var banner storage.BannerDb
+	var ok bool
+
+	reqCache := fmt.Sprintf("%d %d", feature_id, tag_id)
+
+	cacheValue, found := h.cacheB.Get(reqCache)
+	if found {
+		banner, ok = cacheValue.(storage.BannerDb)
+		if !ok {
+			found = false
+		}
+	}
+	if !found {
+		banner, err = h.storage.GetBanner(context.Background(), tag_id, feature_id)
+		h.cacheB.Set(reqCache, banner, cache.DefaultExpiration)
+	}
 
 	if err != nil {
 		if err.Error() == "banner not found" {
